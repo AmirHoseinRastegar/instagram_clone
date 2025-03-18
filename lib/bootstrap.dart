@@ -2,7 +2,16 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
+import 'package:env/env.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/widgets.dart';
+import 'package:instagram_clone/app/di/di.dart';
+import 'package:powersync_repository/powersync.dart';
+import 'package:shared/shared.dart';
+
+typedef AppBuilder = FutureOr<Widget> Function(
+  PowerSyncRepository,
+);
 
 class AppBlocObserver extends BlocObserver {
   const AppBlocObserver();
@@ -20,14 +29,29 @@ class AppBlocObserver extends BlocObserver {
   }
 }
 
-Future<void> bootstrap(FutureOr<Widget> Function() builder) async {
+typedef EnvValue = String Function(Env);
+Future<void> bootstrap(
+    AppBuilder builder, FirebaseOptions options, AppFlavor appFlavor,) async {
   FlutterError.onError = (details) {
-    log(details.exceptionAsString(), stackTrace: details.stack);
+    logD(details.exceptionAsString(), stackTrace: details.stack);
   };
 
   Bloc.observer = const AppBlocObserver();
 
   // Add cross-flavor configuration here
 
-  runApp(await builder());
+  await runZonedGuarded(() async {
+    WidgetsFlutterBinding.ensureInitialized();
+    initializeDependencies(appFlavor: appFlavor);
+    await Firebase.initializeApp(options: options);
+
+    final powerSyncRepository = PowerSyncRepository(
+      env: appFlavor.getEnv,
+    );
+    await powerSyncRepository.initialize();
+
+    runApp(await builder(powerSyncRepository));
+  }, (error, stack) {
+    logE(error.toString(), stackTrace: stack);
+  });
 }
