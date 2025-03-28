@@ -1,9 +1,9 @@
 import 'package:env/env.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:instagram_clone/app/di/di.dart';
+import 'package:instagram_clone/auth/auth.dart';
 import 'package:instagram_clone/bootstrap.dart';
 import 'package:instagram_clone/firebase_options.dart';
-import 'package:instagram_clone/auth/login/login.dart';
 import 'package:shared/shared.dart';
 import 'package:supabase_auth_client/supabase_auth_client.dart';
 import 'package:token_storage/token_storage.dart';

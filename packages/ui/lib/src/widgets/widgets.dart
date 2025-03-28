@@ -1,4 +1,5 @@
 export 'app_button.dart';
+export 'app_circular_indicator.dart';
 export 'app_divider.dart';
 export 'app_loading.dart';
 export 'app_logo.dart';
