@@ -13,7 +13,7 @@ class UserRepository  {
         _authenticationClient = authenticationClient;
 
   final AuthenticationClient _authenticationClient;
-
+  
   /// Stream of [User] which will emit the current user when
   /// the authentication state changes.
   Stream<User> get user => _authenticationClient.user

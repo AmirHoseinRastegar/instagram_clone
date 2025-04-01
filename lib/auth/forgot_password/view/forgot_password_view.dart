@@ -2,6 +2,7 @@ import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:instagram_clone/auth/auth.dart';
+import 'package:instagram_clone/auth/forgot_password/reset_password/cubit/cubit/change_password_cubit.dart';
 import 'package:instagram_clone/l10n/l10n.dart';
 import 'package:ui/ui.dart';
 import 'package:user_repository/user_repository.dart';
@@ -19,6 +20,11 @@ class ManageForgotPasswordPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
+        BlocProvider(
+          create: (context) => ChangePasswordCubit(
+            userRepository: context.read<UserRepository>(),
+          ),
+        ),
         BlocProvider(
           create: (context) => ForgotPasswordtoggleCubit(),
         ),
@@ -57,7 +63,7 @@ class ForgotPasswordView extends StatelessWidget {
       },
       child: showForgotPassword
           ? const ForgotPasswordScreen()
-          : const ResetPasswordView(),
+          : const ChangePasswordView(),
     );
   }
 }

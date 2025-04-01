@@ -6,6 +6,8 @@ import 'package:instagram_clone/l10n/l10n.dart';
 import 'package:ui/ui.dart';
 import 'package:user_repository/user_repository.dart';
 
+final snackbarKey = GlobalKey<AppSnackbarState>();
+
 class AppView extends StatelessWidget {
   const AppView({required this.userRepository, super.key});
 
@@ -18,6 +20,19 @@ class AppView extends StatelessWidget {
     );
   }
 }
+
+/// Snack bar to show messages to the user.
+void openSnackbar(
+  SnackbarMessage message, {
+  bool clearIfQueue = false,
+  bool undismissable = false,
+}) {
+  snackbarKey.currentState
+      ?.post(message, clearIfQueue: clearIfQueue, undismissable: undismissable);
+}
+
+/// Closes all snack bars.
+void closeSnackbars() => snackbarKey.currentState?.closeAll();
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -123,6 +138,12 @@ class LoginView extends StatelessWidget {
               ),
             ),
             const SignUpNewAccountButton(),
+            // ElevatedButton(
+            //   onPressed: () => context.read<UserRepository>().logOut(),
+            //   child: const Text(
+            //     'logOut',
+            //   ),
+            // ),
           ],
         ),
       ),

@@ -5,6 +5,7 @@ export 'app_loading.dart';
 export 'app_logo.dart';
 export 'app_scaffold.dart';
 export 'app_scrollview.dart';
+export 'app_snakbar.dart';
 export 'app_text_field.dart';
 export 'gap.dart';
 export 'tappable.dart';

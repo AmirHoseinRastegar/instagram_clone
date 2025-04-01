@@ -105,3 +105,21 @@ class LoginState extends Equatable {
     );
   }
 }
+
+final loginSubmissionStatusMessage =
+    <LogInSubmissionStatus, SubmissionStatusMessage>{
+  LogInSubmissionStatus.error: const SubmissionStatusMessage.genericError(),
+  LogInSubmissionStatus.networkError:
+      const SubmissionStatusMessage.networkError(),
+  LogInSubmissionStatus.invalidCredentials: const SubmissionStatusMessage(
+    title: 'Email and/or password are incorrect.',
+  ),
+  LogInSubmissionStatus.userNotFound: const SubmissionStatusMessage(
+    title: 'User with this email not found!',
+    description: 'Try to sign up.',
+  ),
+  LogInSubmissionStatus.googleLogInFailure: const SubmissionStatusMessage(
+    title: 'Google login failed!',
+    description: 'Try again later.',
+  ),
+};
