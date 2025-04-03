@@ -1,9 +1,11 @@
+import 'dart:io';
+import 'package:auth_client/auth_client.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:forms/forms.dart';
+import 'package:powersync_repository/powersync.dart';
 import 'package:shared/shared.dart';
 import 'package:user_repository/user_repository.dart';
-
 part 'change_password_state.dart';
 
 class ChangePasswordCubit extends Cubit<ChangePasswordState> {
@@ -119,8 +121,25 @@ class ChangePasswordCubit extends Cubit<ChangePasswordState> {
       if (isClosed) return;
       emit(newState);
     } catch (error, stackTrace) {
-      addError(error, stackTrace);
-      emit(state.copyWith(status: ChangePasswordStatus.invalidOtp));
+      print(
+        '----------------------------------------error:$error,',
+      );
+      _errorFormatter(error, stackTrace);
     }
+  }
+
+  void _errorFormatter(Object error, StackTrace stackTrace) {
+    addError(error, stackTrace);
+    final status = switch (error) {
+      ResetPasswordFailure(:final AuthException error) => switch (
+            error.statusCode?.parse) {
+          HttpStatus.unauthorized ||
+          HttpStatus.forbidden =>
+            ChangePasswordStatus.invalidOtp,
+          _ => ChangePasswordStatus.failure
+        },
+      _ => ChangePasswordStatus.failure
+    };
+    emit(state.copyWith(status: status));
   }
 }

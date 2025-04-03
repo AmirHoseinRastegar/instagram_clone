@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:instagram_clone/auth/cubit/cubit/forgot_password_cubit.dart';
+import 'package:instagram_clone/auth/cubit/cubit/forgot_password_toggle_cubit.dart';
 import 'package:instagram_clone/auth/forgot_password/forgot_password.dart';
 import 'package:instagram_clone/l10n/l10n.dart';
 import 'package:shared/shared.dart';

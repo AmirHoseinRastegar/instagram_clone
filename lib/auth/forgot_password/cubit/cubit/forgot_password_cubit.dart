@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:auth_client/auth_client.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
@@ -86,7 +87,8 @@ class ForgotPasswordCubit extends Cubit<ForgotPasswordState> {
   void _errorFormatter(Object error, StackTrace stackTrace) {
     addError(error, stackTrace);
     final status = switch (error) {
-      AuthException(:final statusCode) => switch (statusCode?.parse) {
+      SendPasswordResetEmailFailure(:final AuthException error) => switch (
+            error.statusCode?.parse) {
           HttpStatus.tooManyRequests => ForgotPasswordStatus.tooManyRequests,
           _ => ForgotPasswordStatus.failure,
         },

@@ -1,8 +1,10 @@
 import 'dart:io';
 
+import 'package:auth_client/auth_client.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:forms/forms.dart';
+import 'package:powersync_repository/powersync.dart';
 import 'package:shared/shared.dart';
 import 'package:user_repository/user_repository.dart';
 part 'sign_up_state.dart';
@@ -208,6 +210,7 @@ class SignUpCubit extends Cubit<SignupState> {
         newState,
       );
     } catch (e, str) {
+      print('Caught error:------------------------------------------ $e');
       _errorFormatter(e, str);
     }
   }
@@ -220,12 +223,18 @@ class SignUpCubit extends Cubit<SignupState> {
   void _errorFormatter(Object e, StackTrace stackTrace) {
     addError(e, stackTrace);
 
-    SignUpSubmissionStatus submissionStatus() {
-      return SignUpSubmissionStatus.error;
-    }
-
+    final submissionStatus = switch (e) {
+      SignUpWithPasswordFailure(:final AuthException error) => switch (
+            error.statusCode?.parse) {
+          HttpStatus.badRequest ||
+          HttpStatus.unprocessableEntity =>
+            SignUpSubmissionStatus.emailAlreadyRegistered,
+          _ => SignUpSubmissionStatus.error,
+        },
+      _ => SignUpSubmissionStatus.idle
+    };
     final newState = state.copyWith(
-      submissionStatus: submissionStatus(),
+      submissionStatus: submissionStatus,
     );
     emit(newState);
   }
