@@ -5,8 +5,8 @@ import 'package:instagram_related_ui/instagram_related_ui.dart';
 import 'package:ui/ui.dart';
 import 'package:user_repository/user_repository.dart';
 
-class SignUp extends StatelessWidget {
-  const SignUp({super.key});
+class SignUpPage extends StatelessWidget {
+  const SignUpPage({super.key});
 
   @override
   Widget build(BuildContext context) {

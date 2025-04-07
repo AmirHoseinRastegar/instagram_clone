@@ -6,11 +6,14 @@ import 'package:go_router/go_router.dart';
 import 'package:instagram_clone/app/app.dart';
 import 'package:instagram_clone/auth/view/auth_view.dart';
 import 'package:instagram_clone/home/home.dart';
+import 'package:instagram_clone/profile/view/profile_view.dart';
 import 'package:ui/ui.dart';
 import 'package:user_repository/user_repository.dart';
 
+final _rootNavKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 GoRouter router(AppBloc appBloc) {
   return GoRouter(
+    navigatorKey: _rootNavKey,
     initialLocation: '/auth',
     routes: [
       GoRoute(
@@ -18,6 +21,7 @@ GoRouter router(AppBloc appBloc) {
         builder: (context, state) => const AuthPage(),
       ),
       StatefulShellRoute.indexedStack(
+        parentNavigatorKey: _rootNavKey,
         builder: (context, state, navigationShell) {
           return HomePage(navShell: navigationShell);
         },
@@ -111,13 +115,16 @@ GoRouter router(AppBloc appBloc) {
                 path: '/profile',
                 pageBuilder: (context, state) {
                   return CustomTransitionPage(
-                    child: AppScaffold(
-                      body: ElevatedButton(
-                        onPressed: () {
-                          context.read<UserRepository>().logOut();
-                        },
-                        child: const Text('log out'),
-                      ),
+                    child: const AppScaffold(
+                      body: ProfilePage(),
+                      // body: ElevatedButton(
+                      //   onPressed: () {
+                      //     context.read<AppBloc>().add(
+                      //           const AppLogoutRequested(),
+                      //         );
+                      //   },
+                      //   child: const Text('log out'),
+                      // ),
                     ),
                     transitionsBuilder: (
                       context,

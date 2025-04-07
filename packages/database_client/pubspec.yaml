@@ -1,4 +1,4 @@
-name: user_repository
+name: database_client
 description: A Very Good Project created by Very Good CLI.
 version: 0.1.0+1
 publish_to: none
@@ -8,17 +8,10 @@ environment:
   flutter: ^3.24.0
 
 dependencies:
-  auth_client:
-    path: ../auth_client/auth_client
-  database_client:
-    path: ../database_client
   flutter:
     sdk: flutter
   powersync_repository:
     path: ../powersync_repository
-  rxdart: ^0.27.7
-  shared:
-    path: ../shared
 dev_dependencies:
   flutter_test:
     sdk: flutter

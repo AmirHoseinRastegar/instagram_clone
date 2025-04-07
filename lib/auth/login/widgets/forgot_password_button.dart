@@ -28,7 +28,7 @@ class ForgotPasswordButton extends StatelessWidget {
       onTap: () {
         Navigator.pushAndRemoveUntil(
           context,
-          ManageForgotPasswordPage.route(),
+          ForgotPasswordPage.route(),
           (_) => true,
         );
       },

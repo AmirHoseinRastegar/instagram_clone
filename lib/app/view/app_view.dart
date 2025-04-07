@@ -58,7 +58,7 @@ class App extends StatelessWidget {
       localizationsDelegates: const [AppLocalizations.delegate],
       debugShowCheckedModeBanner: false,
       title: 'Instagram clone',
-      themeMode: ThemeMode.dark,
+      themeMode: ThemeMode.light,
       theme: const AppTheme().theme,
       darkTheme: const AppDarkTheme().theme,
       routerConfig: router(

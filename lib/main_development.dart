@@ -1,3 +1,4 @@
+import 'package:database_client/database_client.dart';
 import 'package:env/env.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:instagram_clone/app/di/di.dart';
@@ -26,8 +27,14 @@ void main() {
         powerSyncRepository: powerSyncRepository,
         tokenStorage: tokenStorage,
       );
+
+      final dataBaseClient = PowerSyncUserDatabaseRepository(
+        powerSyncRepository: powerSyncRepository,
+      );
+
       final userRepository = UserRepository(
         authenticationClient: supabaseAuthClient,
+        databaseClient: dataBaseClient,
       );
       return AppView(
         user: await userRepository.user.first,

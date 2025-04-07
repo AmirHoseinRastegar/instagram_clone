@@ -1,19 +1,21 @@
 import 'package:auth_client/auth_client.dart';
+import 'package:database_client/database_client.dart';
 
 import 'package:user_repository/src/models/models.dart';
 
 /// {@template user_repository}
 /// A package that manages user flow.
 /// {@endtemplate}
-class UserRepository  {
+class UserRepository extends UserDataClient {
   /// {@macro user_repository}
-  const UserRepository({
+  UserRepository({
+    required DatabaseClient databaseClient,
     required AuthenticationClient authenticationClient,
-  })  : 
-        _authenticationClient = authenticationClient;
-
+  })  : _authenticationClient = authenticationClient,
+        _databaseClient = databaseClient;
+  final DatabaseClient _databaseClient;
   final AuthenticationClient _authenticationClient;
-  
+
   /// Stream of [User] which will emit the current user when
   /// the authentication state changes.
   Stream<User> get user => _authenticationClient.user
@@ -156,5 +158,9 @@ class UserRepository  {
       Error.throwWithStackTrace(ResetPasswordFailure, stackTrace);
     }
   }
+
+  @override
+  String? get currentUser => _databaseClient.currentUser;
+  
 
 }

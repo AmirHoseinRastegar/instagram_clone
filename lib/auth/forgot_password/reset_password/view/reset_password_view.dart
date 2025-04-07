@@ -23,34 +23,40 @@ class ChangePasswordView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppScaffold(
-      appBar: AppBar(
-        title: Text(context.l10n.changePasswordText),
-        centerTitle: false,
-        leading: IconButton(
-          icon: Icon(Icons.adaptive.arrow_back),
-          onPressed: () {
-            _confirmGoBack(context);
-          },
+    return PopScope(
+      onPopInvoked: (didPop) {
+        _confirmGoBack(context);
+        Future.value(false);
+      },
+      child: AppScaffold(
+        appBar: AppBar(
+          title: Text(context.l10n.changePasswordText),
+          centerTitle: false,
+          leading: IconButton(
+            icon: Icon(Icons.adaptive.arrow_back),
+            onPressed: () {
+              _confirmGoBack(context);
+            },
+          ),
         ),
-      ),
-      releaseFocus: true,
-      resizeToAvoidBottomInset: true,
-      body: AppConstrainedScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xlg),
-        child: Column(
-          children: [
-            const Gap.v(AppSpacing.xxxlg * 3),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  const ChangePasswordForm(),
-                  const Align(child: ChangePasswordButton()),
-                ].spacerBetween(height: AppSpacing.md),
+        releaseFocus: true,
+        resizeToAvoidBottomInset: true,
+        body: AppConstrainedScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xlg),
+          child: Column(
+            children: [
+              const Gap.v(AppSpacing.xxxlg * 3),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    const ChangePasswordForm(),
+                    const Align(child: ChangePasswordButton()),
+                  ].spacerBetween(height: AppSpacing.md),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

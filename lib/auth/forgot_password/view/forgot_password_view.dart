@@ -7,11 +7,11 @@ import 'package:instagram_clone/l10n/l10n.dart';
 import 'package:ui/ui.dart';
 import 'package:user_repository/user_repository.dart';
 
-class ManageForgotPasswordPage extends StatelessWidget {
-  const ManageForgotPasswordPage({super.key});
+class ForgotPasswordPage extends StatelessWidget {
+  const ForgotPasswordPage({super.key});
 
   static Route<void> route() => PageRouteBuilder(
-        pageBuilder: (_, __, ___) => const ManageForgotPasswordPage(),
+        pageBuilder: (_, __, ___) => const ForgotPasswordPage(),
         transitionDuration: Duration.zero,
         reverseTransitionDuration: Duration.zero,
       );
