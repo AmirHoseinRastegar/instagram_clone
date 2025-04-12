@@ -161,6 +161,7 @@ class UserRepository extends UserDataClient {
 
   @override
   String? get currentUser => _databaseClient.currentUser;
-  
 
+  @override
+  Stream<User> profile({required String id}) => _databaseClient.profile(id: id);
 }

@@ -14,6 +14,7 @@ class ProfileBloc extends Bloc<ProfileEvent, UserProfileState> {
         super(const UserProfileState.initial()) {
     on<UserProfileSubscriptionRequested>(_onUserSubscriptionRequested);
   }
+  
   final UserRepository _userRepository;
   final String _userId;
 
@@ -23,7 +24,7 @@ class ProfileBloc extends Bloc<ProfileEvent, UserProfileState> {
     Emitter<UserProfileState> emit,
   ) async {
     await emit.forEach(
-      isOwner ? _userRepository.user : _userRepository.profile(),
+      isOwner ? _userRepository.user : _userRepository.profile(id: _userId),
       onData: (user) => state.copyWith(user: user),
     );
   }

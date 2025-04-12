@@ -8,7 +8,6 @@ import 'package:instagram_clone/auth/view/auth_view.dart';
 import 'package:instagram_clone/home/home.dart';
 import 'package:instagram_clone/profile/view/profile_view.dart';
 import 'package:ui/ui.dart';
-import 'package:user_repository/user_repository.dart';
 
 final _rootNavKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 GoRouter router(AppBloc appBloc) {
@@ -114,9 +113,13 @@ GoRouter router(AppBloc appBloc) {
               GoRoute(
                 path: '/profile',
                 pageBuilder: (context, state) {
+                  final user =
+                      context.select((AppBloc bloc) => bloc.state.user);
                   return CustomTransitionPage(
-                    child: const AppScaffold(
-                      body: ProfilePage(),
+                    child: AppScaffold(
+                      body: ProfilePage(
+                        userId: user.id,
+                      ),
                       // body: ElevatedButton(
                       //   onPressed: () {
                       //     context.read<AppBloc>().add(

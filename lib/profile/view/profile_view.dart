@@ -1,24 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:instagram_clone/app/bloc/app_bloc.dart';
 import 'package:instagram_clone/l10n/l10n.dart';
-import 'package:shared/shared.dart';
+import 'package:instagram_clone/profile/profile.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 import 'package:ui/ui.dart';
+import 'package:user_repository/user_repository.dart';
 
 class ProfilePage extends StatelessWidget {
-  const ProfilePage({super.key});
+  const ProfilePage({required this.userId, super.key});
+  final String userId;
 
   @override
   Widget build(BuildContext context) {
-    return const ProfileView();
+    return BlocProvider(
+      create: (context) => ProfileBloc(
+        userRepository: context.read<UserRepository>(),
+        userId: userId,
+      )..add(const UserProfileSubscriptionRequested()),
+      child: ProfileView(
+        userId: userId,
+      ),
+    );
   }
 }
 
 class ProfileView extends StatefulWidget {
-  const ProfileView({super.key});
-
+  const ProfileView({required this.userId, super.key});
+  final String userId;
   @override
   State<ProfileView> createState() => _ProfileViewState();
 }
@@ -39,6 +48,7 @@ class _ProfileViewState extends State<ProfileView> {
 
   @override
   Widget build(BuildContext context) {
+    final user = context.select((ProfileBloc bloc) => bloc.state.user);
     return AppScaffold(
       body: DefaultTabController(
         length: 2,
@@ -49,7 +59,16 @@ class _ProfileViewState extends State<ProfileView> {
               SliverOverlapAbsorber(
                 handle:
                     NestedScrollView.sliverOverlapAbsorberHandleFor(context),
-                sliver: MultiSliver(children: const [ProfileAppBar()]),
+                sliver: MultiSliver(
+                  children: [
+                    ProfileAppBar(),
+                    if (!user.isAnonymous) ...[
+                      ProfileHeader(
+                        userId: widget.userId,
+                      ),
+                    ]
+                  ],
+                ),
               ),
             ];
           },
@@ -65,6 +84,9 @@ class ProfileAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final user = context.select((ProfileBloc bloc) => bloc.state.user);
+    final isOwner = context.select((ProfileBloc bloc) => bloc.isOwner);
+
     return SliverPadding(
       padding: const EdgeInsets.only(right: AppSpacing.md),
       sliver: SliverAppBar(
@@ -76,7 +98,7 @@ class ProfileAppBar extends StatelessWidget {
             Flexible(
               flex: 12,
               child: Text(
-                'amirHosien',
+                user.displayUsername,
                 style:
                     context.titleLarge!.copyWith(fontWeight: FontWeight.bold),
                 overflow: TextOverflow.ellipsis,
@@ -90,9 +112,9 @@ class ProfileAppBar extends StatelessWidget {
             ),
           ],
         ),
-        actions:[ 
-          if (!true)
-            ProfileActions()
+        actions: [
+          if (!isOwner)
+            const ProfileActions()
           else ...[
             const UserProfileAddMediaButton(),
             if (ModalRoute.of(context)?.isFirst ?? false) ...const [

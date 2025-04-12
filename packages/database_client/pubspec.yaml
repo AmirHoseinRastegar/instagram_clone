@@ -12,6 +12,8 @@ dependencies:
     sdk: flutter
   powersync_repository:
     path: ../powersync_repository
+  user_repository:
+    path: ../user_repository
 dev_dependencies:
   flutter_test:
     sdk: flutter

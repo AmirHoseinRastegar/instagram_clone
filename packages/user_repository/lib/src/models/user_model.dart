@@ -1,8 +1,6 @@
 import 'package:auth_client/auth_client.dart';
 
-/// {@template user}
 /// User model represents the current user.
-/// {@endtemplate}
 class User extends AuthenticationUser {
   /// {@macro user}
   const User({
