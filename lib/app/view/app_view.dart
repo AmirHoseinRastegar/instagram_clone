@@ -3,20 +3,33 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:instagram_clone/app/bloc/app_bloc.dart';
 import 'package:instagram_clone/app/routes/routes.dart';
 import 'package:instagram_clone/l10n/arb/app_localizations.dart';
+import 'package:posts_repository/posts_repository.dart';
 import 'package:ui/ui.dart';
 import 'package:user_repository/user_repository.dart';
 
 final snackbarKey = GlobalKey<AppSnackbarState>();
 
 class AppView extends StatelessWidget {
-  const AppView({required this.userRepository, required this.user, super.key});
+  const AppView(
+      {required this.postsRepository,
+      required this.userRepository,
+      required this.user,
+      super.key,});
 
   final UserRepository userRepository;
   final User user;
+  final PostsRepository postsRepository;
   @override
   Widget build(BuildContext context) {
-    return RepositoryProvider.value(
-      value: userRepository,
+    return MultiRepositoryProvider(
+      providers: [
+        RepositoryProvider.value(
+          value: userRepository,
+        ),
+        RepositoryProvider.value(
+          value: postsRepository,
+        ),
+      ],
       child: BlocProvider(
         create: (context) =>
             AppBloc(user: user, userRepository: userRepository),

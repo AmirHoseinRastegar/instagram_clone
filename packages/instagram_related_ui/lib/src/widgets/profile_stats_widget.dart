@@ -1,13 +1,14 @@
+// ignore_for_file: public_member_api_docs
+
 import 'package:flutter/widgets.dart';
 import 'package:shared/shared.dart';
 import 'package:ui/ui.dart';
 
 class ProfileStatsWidget extends StatelessWidget {
-  const ProfileStatsWidget(
-    {
+  const ProfileStatsWidget({
     required this.name,
     required this.value,
-     this.onTap,
+    this.onTap,
     super.key,
   });
   final String name;
@@ -15,10 +16,12 @@ class ProfileStatsWidget extends StatelessWidget {
   final VoidCallback? onTap;
   @override
   Widget build(BuildContext context) {
-    return Tappable(
+    return Tappable.faded(
       onTap: onTap,
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
+          StatsValue(value: value),
           Text(
             name.toLowerCase(),
             maxLines: 1,

@@ -164,4 +164,12 @@ class UserRepository extends UserDataClient {
 
   @override
   Stream<User> profile({required String id}) => _databaseClient.profile(id: id);
+
+  @override
+  Stream<int> followersCount({required String userId}) =>
+      _databaseClient.followersCount(userId: userId);
+
+  @override
+  Stream<int> followingsCount({required String userId}) =>
+      _databaseClient.followingsCount(userId: userId);
 }

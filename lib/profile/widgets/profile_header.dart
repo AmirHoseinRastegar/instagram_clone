@@ -34,9 +34,11 @@ class ProfileHeader extends StatelessWidget {
                   ),
                   radius: 32,
                 ),
-                ProfileStatistics(
-                  onTap: (value) =>
-                      _pushToStatsTapped(context, tabIndex: value),
+                Expanded(
+                  child: ProfileStatistics(
+                    onTap: (value) =>
+                        _pushToStatsTapped(context, tabIndex: value),
+                  ),
                 ),
               ],
             ),
@@ -48,34 +50,40 @@ class ProfileHeader extends StatelessWidget {
 }
 
 class ProfileStatistics extends StatelessWidget {
-  const ProfileStatistics({super.key, required this.onTap});
+  const ProfileStatistics({required this.onTap, super.key});
   final ValueSetter<int> onTap;
   @override
   Widget build(BuildContext context) {
+    final postsCount =
+        context.select((ProfileBloc bloc) => bloc.state.postsCount);
+    final followersCount =
+        context.select((ProfileBloc bloc) => bloc.state.followersCount);
+    final followingsCount =
+        context.select((ProfileBloc bloc) => bloc.state.followingsCount);
     final l10n = context.l10n;
     return Row(
       children: [
         Expanded(
           child: ProfileStatsWidget(
-            value: 0,
+            value: postsCount,
             name: l10n.postsCount(0),
           ),
         ),
         Expanded(
           child: ProfileStatsWidget(
             name: l10n.followersText,
-            value: 0,
+            value: followersCount,
             onTap: () => onTap.call(0),
           ),
         ),
         Expanded(
           child: ProfileStatsWidget(
             name: l10n.followingsText,
-            value: 0,
+            value: followingsCount,
             onTap: () => onTap.call(1),
           ),
         ),
-      ],
+      ].spacerBetween(width: AppSpacing.sm),
     );
   }
 }

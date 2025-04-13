@@ -5,6 +5,7 @@ import 'package:instagram_clone/app/di/di.dart';
 import 'package:instagram_clone/app/view/app_view.dart';
 import 'package:instagram_clone/bootstrap.dart';
 import 'package:instagram_clone/firebase_options.dart';
+import 'package:posts_repository/posts_repository.dart';
 import 'package:shared/shared.dart';
 import 'package:supabase_auth_client/supabase_auth_client.dart';
 import 'package:token_storage/token_storage.dart';
@@ -36,7 +37,9 @@ void main() {
         authenticationClient: supabaseAuthClient,
         databaseClient: dataBaseClient,
       );
+      final postsRepository = PostsRepository(databaseClient: dataBaseClient);
       return AppView(
+        postsRepository: postsRepository,
         user: await userRepository.user.first,
         userRepository: userRepository,
       );

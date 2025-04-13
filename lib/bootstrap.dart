@@ -6,6 +6,7 @@ import 'package:env/env.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/widgets.dart';
 import 'package:instagram_clone/app/di/di.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:powersync_repository/powersync.dart';
 import 'package:shared/shared.dart';
 
@@ -31,7 +32,10 @@ class AppBlocObserver extends BlocObserver {
 
 typedef EnvValue = String Function(Env);
 Future<void> bootstrap(
-    AppBuilder builder, FirebaseOptions options, AppFlavor appFlavor,) async {
+  AppBuilder builder,
+  FirebaseOptions options,
+  AppFlavor appFlavor,
+) async {
   FlutterError.onError = (details) {
     logD(details.exceptionAsString(), stackTrace: details.stack);
   };
@@ -44,6 +48,9 @@ Future<void> bootstrap(
     WidgetsFlutterBinding.ensureInitialized();
     initializeDependencies(appFlavor: appFlavor);
     await Firebase.initializeApp(options: options);
+
+    // Initialize date formatting for the default locale
+    await initializeDateFormatting('en');
 
     final powerSyncRepository = PowerSyncRepository(
       env: appFlavor.getEnv,

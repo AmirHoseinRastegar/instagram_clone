@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:instagram_clone/app/bloc/app_bloc.dart';
 import 'package:instagram_clone/l10n/l10n.dart';
 import 'package:instagram_clone/profile/profile.dart';
+import 'package:posts_repository/posts_repository.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 import 'package:ui/ui.dart';
 import 'package:user_repository/user_repository.dart';
@@ -17,7 +18,16 @@ class ProfilePage extends StatelessWidget {
       create: (context) => ProfileBloc(
         userRepository: context.read<UserRepository>(),
         userId: userId,
-      )..add(const UserProfileSubscriptionRequested()),
+        postsRepositroy: context.read<PostsRepository>(),
+      )
+        ..add(const UserProfileSubscriptionRequested())
+        ..add(
+          const UserProfileFollowersCountSubscriptionRequested(),
+        )
+        ..add(
+          const UserProfileFollowingsCountSubscriptionRequested(),
+        )
+        ..add(const UserProfilePostsCountSubscriptionRequested()),
       child: ProfileView(
         userId: userId,
       ),
@@ -61,7 +71,7 @@ class _ProfileViewState extends State<ProfileView> {
                     NestedScrollView.sliverOverlapAbsorberHandleFor(context),
                 sliver: MultiSliver(
                   children: [
-                    ProfileAppBar(),
+                    const ProfileAppBar(),
                     if (!user.isAnonymous) ...[
                       ProfileHeader(
                         userId: widget.userId,
@@ -72,7 +82,7 @@ class _ProfileViewState extends State<ProfileView> {
               ),
             ];
           },
-          body: Column(),
+          body: const Column(),
         ),
       ),
     );

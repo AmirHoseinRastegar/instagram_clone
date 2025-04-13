@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:posts_repository/posts_repository.dart';
 import 'package:user_repository/user_repository.dart';
 
 part 'profile_event.dart';
@@ -8,15 +9,23 @@ part 'profile_state.dart';
 class ProfileBloc extends Bloc<ProfileEvent, UserProfileState> {
   ProfileBloc({
     required UserRepository userRepository,
+    required PostsRepository postsRepositroy,
     String? userId,
   })  : _userId = userId ?? userRepository.currentUser ?? '',
         _userRepository = userRepository,
+        _postsRepository = postsRepositroy,
         super(const UserProfileState.initial()) {
     on<UserProfileSubscriptionRequested>(_onUserSubscriptionRequested);
+    on<UserProfilePostsCountSubscriptionRequested>(_onPostsCountRequested);
+    on<UserProfileFollowersCountSubscriptionRequested>(
+        _onUserFollowersCountRequested);
+    on<UserProfileFollowingsCountSubscriptionRequested>(
+        _onUserFollowingsCountRequested);
   }
-  
+
   final UserRepository _userRepository;
   final String _userId;
+  final PostsRepository _postsRepository;
 
   bool get isOwner => _userId == _userRepository.currentUser;
   Future<void> _onUserSubscriptionRequested(
@@ -26,6 +35,36 @@ class ProfileBloc extends Bloc<ProfileEvent, UserProfileState> {
     await emit.forEach(
       isOwner ? _userRepository.user : _userRepository.profile(id: _userId),
       onData: (user) => state.copyWith(user: user),
+    );
+  }
+
+  Future<void> _onPostsCountRequested(
+    UserProfilePostsCountSubscriptionRequested event,
+    Emitter<UserProfileState> emit,
+  ) async {
+    await emit.forEach(
+      _postsRepository.postsCount(userId: _userId),
+      onData: (data) => state.copyWith(postsCount: data),
+    );
+  }
+
+  Future<void> _onUserFollowersCountRequested(
+    UserProfileFollowersCountSubscriptionRequested event,
+    Emitter<UserProfileState> emit,
+  ) async {
+    await emit.forEach(
+      _userRepository.followersCount(userId: _userId),
+      onData: (data) => state.copyWith(followersCount: data),
+    );
+  }
+
+  Future<void> _onUserFollowingsCountRequested(
+    UserProfileFollowingsCountSubscriptionRequested event,
+    Emitter<UserProfileState> emit,
+  ) async {
+    await emit.forEach(
+      _userRepository.followingsCount(userId: _userId),
+      onData: (data) => state.copyWith(followingsCount: data),
     );
   }
 }
