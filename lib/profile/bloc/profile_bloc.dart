@@ -21,11 +21,24 @@ class ProfileBloc extends Bloc<ProfileEvent, UserProfileState> {
         _onUserFollowersCountRequested);
     on<UserProfileFollowingsCountSubscriptionRequested>(
         _onUserFollowingsCountRequested);
+    on<UserProfileFollowUserRequested>(_onUserFollowUserRequested);
   }
 
   final UserRepository _userRepository;
   final String _userId;
   final PostsRepository _postsRepository;
+
+  Future<void> _onUserFollowUserRequested(UserProfileFollowUserRequested event,
+      Emitter<UserProfileState> emit) async {
+    try {
+      await _userRepository.follow(followId: event.userId ?? _userId);
+    } catch (e, str) {
+      addError(e, str);
+    }
+  }
+
+  Stream<bool> followingStatus({String? userId}) =>
+      _userRepository.followingStatus(userId: _userId).asBroadcastStream();
 
   bool get isOwner => _userId == _userRepository.currentUser;
   Future<void> _onUserSubscriptionRequested(

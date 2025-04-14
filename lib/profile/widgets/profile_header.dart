@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:instagram_clone/l10n/l10n.dart';
-import 'package:instagram_clone/profile/bloc/profile_bloc.dart';
+import 'package:instagram_clone/profile/profile.dart';
 import 'package:instagram_related_ui/instagram_related_ui.dart';
+import 'package:shared/shared.dart';
 import 'package:ui/ui.dart';
 
 class ProfileHeader extends StatelessWidget {
@@ -18,6 +19,7 @@ class ProfileHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = context.select((ProfileBloc bloc) => bloc.state.user);
+    final isOwner = context.select((ProfileBloc bloc) => bloc.isOwner);
     return SliverPadding(
       padding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.md,
@@ -42,9 +44,76 @@ class ProfileHeader extends StatelessWidget {
                 ),
               ],
             ),
+            const Gap.v(AppSpacing.md),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                user.displayFullName,
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+                style: context.titleMedium
+                    ?.copyWith(fontWeight: AppFontWeight.semiBold),
+              ),
+            ),
+            const Gap.v(AppSpacing.md),
+            Row(
+              children: [
+                if (isOwner)
+                  ...[
+                    const Flexible(flex: 3, child: ProfileEditButton()),
+                    const Flexible(flex: 3, child: ShareProfileButton()),
+                    const Flexible(child: ShowSuggestedPeopleButton()),
+                  ].spacerBetween(width: AppSpacing.sm)
+                else ...[
+                  ProfileFollowButton(),
+                ],
+              ],
+            ),
           ],
         ),
       ),
+    );
+  }
+}
+
+class ProfileFollowButton extends StatelessWidget {
+  const ProfileFollowButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final bloc = context.read<ProfileBloc>();
+    final user = context.select(
+      (ProfileBloc bloc) => bloc.state.user,
+    );
+    final l10n = context.l10n;
+    return CustomStreamBuilder<bool>(
+      stream: bloc.followingStatus(),
+      builder: (BuildContext context, bool isFollowed) {
+        return ProfileButton(
+          label: isFollowed ? '${l10n.followingUser} ▼' : l10n.followUser,
+          color: isFollowed
+              ? null
+              : context.customReversedAdaptiveColor(
+                  dark: AppColors.blue,
+                  light: AppColors.lightBlue,
+                ),
+          onTap: isFollowed
+              ? () async {
+                  void callBack(ModalOption option) =>
+                      option.onTap.call(context);
+                  final option = await context.showListOptionsModal(
+                    title: user.username,
+                    options: followerModalOptions(
+                      unfollowLabel: context.l10n.cancelFollowingText,
+                      onUnfollowTap: () => bloc.add(
+                        const UserProfileFollowUserRequested(),
+                      ),
+                    ),
+                  );
+                }
+              : $AssetsAnimationsGen.new,
+        );
+      },
     );
   }
 }
@@ -84,6 +153,51 @@ class ProfileStatistics extends StatelessWidget {
           ),
         ),
       ].spacerBetween(width: AppSpacing.sm),
+    );
+  }
+}
+
+class ProfileEditButton extends StatelessWidget {
+  const ProfileEditButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ProfileButton(
+      label: context.l10n.editProfileText,
+      onTap: () => context.pushNamed('edit_profile'),
+    );
+  }
+}
+
+class ShareProfileButton extends StatelessWidget {
+  const ShareProfileButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ProfileButton(
+      label: context.l10n.shareProfileText,
+      onTap: () {},
+    );
+  }
+}
+
+class ShowSuggestedPeopleButton extends StatefulWidget {
+  const ShowSuggestedPeopleButton({super.key});
+
+  @override
+  State<ShowSuggestedPeopleButton> createState() =>
+      _ShowSuggestedPeopleButtonState();
+}
+
+class _ShowSuggestedPeopleButtonState extends State<ShowSuggestedPeopleButton> {
+  var _showPeople = false;
+  @override
+  Widget build(BuildContext context) {
+    return ProfileButton(
+      onTap: () => setState(() => _showPeople = !_showPeople),
+      child: Icon(
+        _showPeople ? Icons.person_add_rounded : Icons.person_add_outlined,
+      ),
     );
   }
 }

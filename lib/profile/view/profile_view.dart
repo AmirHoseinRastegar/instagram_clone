@@ -76,16 +76,94 @@ class _ProfileViewState extends State<ProfileView> {
                       ProfileHeader(
                         userId: widget.userId,
                       ),
-                    ]
+                      SliverPersistentHeader(
+                        pinned: !ModalRoute.of(context)!.isFirst,
+                        delegate: const _ProfileSliverPersistentTabBarDelegate(
+                          tabBar: TabBar(
+                            indicatorSize: TabBarIndicatorSize.tab,
+                            indicatorWeight: 1,
+                            padding: EdgeInsets.zero,
+                            labelPadding: EdgeInsets.zero,
+                            tabs: [
+                              Tab(
+                                icon: Icon(
+                                  Icons.grid_on,
+                                ),
+                                iconMargin: EdgeInsets.zero,
+                              ),
+                              Tab(
+                                icon: Icon(
+                                  Icons.person_outline,
+                                ),
+                                iconMargin: EdgeInsets.zero,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ),
             ];
           },
-          body: const Column(),
+          body: const TabBarView(
+            children: [
+              ProfilePostsPage(),
+              ProfileMentionedPostsPage(),
+            ],
+          ),
         ),
       ),
     );
+  }
+}
+
+class ProfilePostsPage extends StatelessWidget {
+  const ProfilePostsPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
+  }
+}
+
+class ProfileMentionedPostsPage extends StatelessWidget {
+  const ProfileMentionedPostsPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
+  }
+}
+
+class _ProfileSliverPersistentTabBarDelegate
+    extends SliverPersistentHeaderDelegate {
+  const _ProfileSliverPersistentTabBarDelegate({required this.tabBar});
+  final TabBar tabBar;
+  @override
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
+    return ColoredBox(
+      color: context.theme.scaffoldBackgroundColor,
+      child: tabBar,
+    );
+  }
+
+  @override
+  double get maxExtent => tabBar.preferredSize.height;
+
+  @override
+  double get minExtent => tabBar.preferredSize.height;
+
+  @override
+  bool shouldRebuild(
+    covariant _ProfileSliverPersistentTabBarDelegate oldDelegate,
+  ) {
+    return tabBar != oldDelegate.tabBar;
   }
 }
 

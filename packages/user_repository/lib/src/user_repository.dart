@@ -172,4 +172,21 @@ class UserRepository extends UserDataClient {
   @override
   Stream<int> followingsCount({required String userId}) =>
       _databaseClient.followingsCount(userId: userId);
+
+  @override
+  Stream<bool> followingStatus({required String userId, String? followerId}) =>
+      _databaseClient.followingStatus(userId: userId, followerId: followerId);
+
+  @override
+  Future<void> follow({required String followId, String? followerId}) =>
+      _databaseClient.follow(followId: followId, followerId: followerId);
+
+  @override
+  Future<bool> isFollowed({required String userId, String? followerId}) =>
+      _databaseClient.isFollowed(userId: userId, followerId: followerId);
+
+  @override
+  Future<void> unfollow({required String unfollowId, String? unfollowerId}) =>
+      _databaseClient.unfollow(
+          unfollowId: unfollowId, unfollowerId: unfollowerId);
 }

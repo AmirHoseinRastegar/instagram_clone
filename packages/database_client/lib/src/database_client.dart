@@ -1,4 +1,4 @@
-// ignore_for_file: public_member_api_docs, one_member_abstracts
+// ignore_for_file: public_member_api_docs, one_member_abstracts, inference_failure_on_instance_creation
 
 import 'package:powersync_repository/powersync.dart';
 import 'package:user_repository/user_repository.dart';
@@ -9,6 +9,13 @@ abstract class UserDataClient {
   Stream<User> profile({required String id});
   Stream<int> followersCount({required String userId});
   Stream<int> followingsCount({required String userId});
+  Stream<bool> followingStatus({required String userId, String? followerId});
+  Future<void> follow({
+    required String followId,
+    String? followerId,
+  });
+  Future<void> unfollow({required String unfollowId, String? unfollowerId});
+  Future<bool> isFollowed({required String userId, String? followerId});
 }
 
 abstract class PostRepo {
@@ -77,4 +84,71 @@ class PowerSyncUserDatabaseRepository extends DatabaseClient {
       ).map(
         (event) => event.first['subscription_count'] as int,
       );
+
+  @override
+  Stream<bool> followingStatus({required String userId, String? followerId}) {
+    if (followerId == null && currentUser == null) {
+      const Stream.empty();
+    }
+    return _powerSyncRepository.db().watch(
+      '''
+    SELECT 1 FROM subscriptions WHERE subscriber_id = ? AND subscribed_to_id = ?
+      ''',
+      parameters: [followerId ?? currentUser, userId],
+    ).map(
+      (event) => event.isNotEmpty,
+    );
+  }
+
+  @override
+  Future<void> follow({required String followId, String? followerId}) async {
+    if (currentUser == null) return;
+    if (currentUser == followId) return;
+    final exists = await isFollowed(
+      followerId: followerId ?? currentUser,
+      userId: followId,
+    );
+    if (!exists) {
+      await _powerSyncRepository.db().execute(
+        '''
+          INSERT INTO subscriptions(id, subscriber_id, subscribed_to_id)
+            VALUES(uuid(), ?, ?)
+      ''',
+        [followerId ?? currentUser!, followId],
+      );
+      return;
+    }
+    await unfollow(
+      unfollowId: followId,
+      unfollowerId: followerId ?? currentUser,
+    );
+  }
+
+  @override
+  Future<bool> isFollowed({
+    required String userId,
+    String? followerId,
+  }) async {
+    final res = await _powerSyncRepository.db().execute(
+      '''
+    SELECT 1 FROM subscriptions WHERE subscriber_id = ? AND subscribed_to_id = ?
+    ''',
+      [followerId ?? currentUser, userId],
+    );
+    return res.isNotEmpty;
+  }
+
+  @override
+  Future<void> unfollow({
+    required String unfollowId,
+    String? unfollowerId,
+  }) async {
+    if (currentUser == null) return;
+    await _powerSyncRepository.db().execute(
+      '''
+          DELETE FROM subscriptions WHERE subscriber_id = ? AND subscribed_to_id = ?
+      ''',
+      [unfollowerId ?? currentUser, unfollowId],
+    );
+  }
 }
