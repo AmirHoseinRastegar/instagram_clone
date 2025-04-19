@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:instagram_clone/app/bloc/app_bloc.dart';
 import 'package:instagram_clone/l10n/l10n.dart';
 import 'package:instagram_clone/profile/profile.dart';
+import 'package:instagram_clone/selector/selector.dart';
 import 'package:posts_repository/posts_repository.dart';
+import 'package:shared/shared.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 import 'package:ui/ui.dart';
 import 'package:user_repository/user_repository.dart';
@@ -204,7 +207,7 @@ class ProfileAppBar extends StatelessWidget {
           if (!isOwner)
             const ProfileActions()
           else ...[
-            const UserProfileAddMediaButton(),
+            const ProfileAddMediaButton(),
             if (ModalRoute.of(context)?.isFirst ?? false) ...const [
               Gap.h(AppSpacing.md),
               ProfileSettingsButton(),
@@ -228,13 +231,43 @@ class ProfileActions extends StatelessWidget {
   }
 }
 
-class ProfileSettingsButton extends StatelessWidget {
-  const ProfileSettingsButton({super.key});
+class ProfileAddMediaButton extends StatelessWidget {
+  const ProfileAddMediaButton({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Tappable.faded(
       onTap: () {},
+      child: const Icon(
+        Icons.add_box_outlined,
+        size: AppSize.iconSize,
+      ),
+    );
+  }
+}
+
+class ProfileSettingsButton extends StatelessWidget {
+  const ProfileSettingsButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final user = context.select((AppBloc bloc) => bloc.state.user);
+
+    return Tappable.faded(
+      onTap: () => context.showListOptionsModal(
+        options: [
+          ModalOption(child: const LocaleModalWidget()),
+          ModalOption(child: const ThemeSelectorModalOption()),
+          ModalOption(child: const LogoutModal()),
+        ],
+      ).then(
+        (value) {
+          if (value == null) return;
+          void onTap() => value.onTap(context);
+          onTap.call();
+        },
+      ),
       child: Assets.icons.setting.svg(
         height: AppSize.iconSize,
         width: AppSize.iconSize,
@@ -247,19 +280,27 @@ class ProfileSettingsButton extends StatelessWidget {
   }
 }
 
-class UserProfileAddMediaButton extends StatelessWidget {
-  const UserProfileAddMediaButton({super.key});
+class LogoutModal extends StatelessWidget {
+  const LogoutModal({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    final user = context.select((AppBloc bloc) => bloc.state.user);
-
     return Tappable.faded(
-      onTap: () {},
-      child: const Icon(
-        Icons.add_box_outlined,
-        size: AppSize.iconSize,
+      onTap: () => context.confirmAction(
+          fn: () {
+            context.pop();
+            context.read<AppBloc>().add(const AppLogoutRequested());
+          },
+          title: context.l10n.logOutText,
+          noText: context.l10n.cancelText,
+          content: context.l10n.logOutConfirmationText,
+          yesText: context.l10n.logOutText),
+      child: ListTile(
+        title: Text(
+          context.l10n.logOutText,
+          style: context.bodyLarge?.apply(color: AppColors.red),
+        ),
+        leading: const Icon(Icons.logout, color: AppColors.red),
       ),
     );
   }

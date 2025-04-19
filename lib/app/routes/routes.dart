@@ -120,14 +120,6 @@ GoRouter router(AppBloc appBloc) {
                       body: ProfilePage(
                         userId: user.id,
                       ),
-                      // body: ElevatedButton(
-                      //   onPressed: () {
-                      //     context.read<AppBloc>().add(
-                      //           const AppLogoutRequested(),
-                      //         );
-                      //   },
-                      //   child: const Text('log out'),
-                      // ),
                     ),
                     transitionsBuilder: (
                       context,
