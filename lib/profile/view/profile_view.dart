@@ -127,7 +127,7 @@ class ProfilePostsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return const Scaffold();
   }
 }
 
@@ -136,7 +136,7 @@ class ProfileMentionedPostsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return const Scaffold();
   }
 }
 
@@ -236,8 +236,26 @@ class ProfileAddMediaButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Tappable.faded(
-      onTap: () {},
+      onTap: () => context
+          .showListOptionsModal(
+        title: l10n.createText,
+        options: createMediaModalOptions(
+          reelLabel: l10n.reelText,
+          postLabel: l10n.postText,
+          storyLabel: l10n.storyText,
+          context: context,
+          goTo: (route, {extra}) => context.pushNamed(route, extra: extra),
+          enableStory: true,
+        ),
+      )
+          .then(
+        (value) {
+          if (value == null) return;
+          value.onTap(context);
+        },
+      ),
       child: const Icon(
         Icons.add_box_outlined,
         size: AppSize.iconSize,
@@ -251,8 +269,8 @@ class ProfileSettingsButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    final user = context.select((AppBloc bloc) => bloc.state.user);
+    // final l10n = context.l10n;
+    // final user = context.select((AppBloc bloc) => bloc.state.user);
 
     return Tappable.faded(
       onTap: () => context.showListOptionsModal(

@@ -7,15 +7,22 @@ environment:
   sdk: "^3.3.0"
 
 dependencies:
+  blurhash: ^1.2.0
   env:
     path: ../env
   flutter:
     sdk: flutter
+
+  image_picker_plus:
+    path: ../image_picker_plus
+  flutter_image_compress: ^2.4.0
   intl: ^0.19.0
   logger: ^2.5.0
   powersync: ^1.4.2
   ui:
     path: ../ui
+  uuid: ^4.5.1
+  video_compress: ^3.1.4
 
 dev_dependencies:
   mocktail: ^1.0.3
